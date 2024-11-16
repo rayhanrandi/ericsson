@@ -21,9 +21,9 @@ if __name__ == '__main__':
     try:
         producer.create_instance()
         # allow client to connect
-        time.sleep(3)
-        if producer.is_kafka_connected():
-            producer.produce()
+        # time.sleep(3)
+        # if producer.is_kafka_connected():
+        producer.produce()
     except KeyboardInterrupt:
         producer.logger.info(" [*] Stopping data generation.")
         exit(1)
