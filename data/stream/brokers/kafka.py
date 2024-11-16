@@ -18,9 +18,9 @@ class Producer:
     """
     Creates an instance of KafkaProducer with additional methods to produce dummy data.
     """
-    def __init__(self, kafka_broker: str, _kafka_topic: str) -> None:
+    def __init__(self, kafka_broker: str, kafka_topic: str) -> None:
         self._kafka_server = kafka_broker
-        self._kafka_topic = _kafka_topic
+        self._kafka_topic = kafka_topic
         self._instance = None
         self.logger = Logger().setup_logger(service_name='producer')
     

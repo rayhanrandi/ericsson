@@ -10,12 +10,12 @@ if __name__ == '__main__':
 
     load_dotenv()
 
-    KAFKA_BROKER = os.getenv('KAFKA_BROKER')
-    KAFKA_TOPIC = os.getenv('KAFKA_TOPIC')
+    kafka_broker = os.getenv('KAFKA_BROKER')
+    kafka_topic = os.getenv('KAFKA_TOPIC')
 
     producer = Producer(
-        'localhost:9093', 
-        'sensor_data'
+        kafka_broker, 
+        kafka_topic
     )
 
     try:
