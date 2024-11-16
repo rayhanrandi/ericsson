@@ -28,7 +28,7 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_CREATE_TOPICS: "sensor_data:1:1"
     networks:
-      - data-stream
+      - data-net
     user: "0:0"
 
   clickhouse-server-dwh:
@@ -45,7 +45,7 @@ services:
       - "8123:8123"
       - "9000:9000"
     networks:
-      - data-stream
+      - data-net
     cap_add:
       - SYS_NICE
       - NET_ADMIN
@@ -53,5 +53,5 @@ services:
       - SYS_PTRACE
 
 networks:
-  data-stream:
+  data-net:
     driver: bridge
