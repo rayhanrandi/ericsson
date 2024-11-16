@@ -1,4 +1,5 @@
 import os
+import time
 
 from dotenv import load_dotenv
 
@@ -13,12 +14,16 @@ if __name__ == '__main__':
     KAFKA_TOPIC = os.getenv('KAFKA_TOPIC')
 
     producer = Producer(
-        kafka_broker=KAFKA_BROKER, 
-        kafka_topic=KAFKA_TOPIC
+        'localhost:9093', 
+        'sensor_data'
     )
 
     try:
         producer.create_instance()
-        producer.produce()
+        # allow client to connect
+        time.sleep(3)
+        if producer.is_kafka_connected():
+            producer.produce()
     except KeyboardInterrupt:
+        producer.logger.info(" [*] Stopping data generation.")
         exit(1)

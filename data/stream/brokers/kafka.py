@@ -3,7 +3,10 @@ import math
 import random
 import time
 
-from datetime import datetime, timedelta
+from datetime import (
+    datetime, 
+    timedelta
+)
 
 from config.logging import Logger
 
@@ -12,39 +15,44 @@ from kafka.errors import KafkaError
 
 
 class Producer:
-    def __init__(self, kafka_broker: str, kafka_topic: str) -> None:
-        self.kafka_server = kafka_broker
-        self.kafka_topic = kafka_topic
-        self.instance = None
-        self.logger = Logger().setup_logger(service_name='datastream')
+    """
+    Creates an instance of KafkaProducer with additional methods to produce dummy data.
+    """
+    def __init__(self, kafka_broker: str, _kafka_topic: str) -> None:
+        self._kafka_server = kafka_broker
+        self._kafka_topic = _kafka_topic
+        self._instance = None
+        self.logger = Logger().setup_logger(service_name='producer')
+    
 
     def create_instance(self) -> KafkaProducer:
         """
         Creates new kafka producer and returns an instance of KafkaProducer.
         """
-        self.instance = KafkaProducer(
-            bootstrap_servers=self.kafka_topic,
+        self.logger.info(" [*] Starting Kafka producer...")
+        self._instance = KafkaProducer(
+            bootstrap_servers=self._kafka_server,
             value_serializer=lambda v: json.dumps(v).encode('utf-8'),  # JSON serialization
             api_version=(0,11,5)
         )
-        return self.instance
+        return self._instance
 
     def is_kafka_connected(self) -> bool:
         """
         Check if the Kafka cluster is available by fetching metadata.
         """
         try:
-            metadata = self.instance.bootstrap_connected()
+            metadata = self._instance.bootstrap_connected()
             if metadata:
                 self.logger.info(" [*] Connected to Kafka cluster successfully!")
                 return True
             else:
-                self.logger.error(" [x] Failed to connect to Kafka cluster.")
+                self.logger.error(" [X] Failed to connect to Kafka cluster.")
                 return False
         except KafkaError as e:
-            self.logger.error(f" [x] Kafka connection error: {e}")
+            self.logger.error(f" [X] Kafka connection error: {e}")
             return False
-
+        
     def ensure_bytes(self, message) -> bytes:
         """
         Ensure the message is in byte format.
@@ -105,14 +113,15 @@ class Producer:
                             sensor_data["gyro"] = [round(random.uniform(50, 100), 2) for _ in range(3)]
 
                     # Send data to Kafka
-                    self.instance.send(self.kafka_topic, value=sensor_data)
+                    self._instance.send(self._kafka_topic, value=sensor_data)
                     self.logger.info(f" [*] Sent data to Kafka: {sensor_data}")
 
                     # simulate delays
                     # TODO: minimize delays
                     time.sleep(random.uniform(1, 30))
-        except:
+        except Exception as e:
+            self.logger.error(f" [X] {e}")
             self.logger.info(" [*] Stopping data generation.")
         finally:
             # close the kafka producer
-            self.instance.close()
+            self._instance.close()
