@@ -1,0 +1,63 @@
+sources:
+  data-stream:
+    type: file
+    include: 
+      - /var/log/data/stream/*.log  # Path to log files. Update as needed.
+    ignore_older: 604800  # Ignore files older than 7 days (in seconds).
+  data-processing:
+    type: file
+    include: 
+      - /var/log/data/processing/*.log  # Path to log files. Update as needed.
+    ignore_older: 604800  # Ignore files older than 7 days (in seconds).
+
+transforms:
+  parse_logs:
+    type: remap
+    inputs:
+      - data-stream
+      - data-processing
+    source: |
+      . = parse_regex!(.message, r'^\[(?P<timestamp>[^\]]+)\] - (?P<component>[^ ]+) - (?P<level>[^ ]+) -  (?P<message>.+)$')
+      
+      # Parse timestamp into proper DateTime format
+      .timestamp = parse_timestamp!(.timestamp, "%Y-%m-%d %H:%M:%S")
+      
+      # Handle the message content
+      if starts_with(.message, "[*] recv:") {
+        .event_type = "consumer_record"
+        # Extract the record part
+        . |= parse_regex!(.message, r'^\[\*\] recv: (?P<record>.+)$')
+      } else if starts_with(.message, "[X]") {
+        .event_type = "error"
+        .record = null
+      } else {
+        .event_type = "info"
+        .record = null
+      }
+
+sinks:
+  # Optional debug sink to see what's being processed
+  console:
+    type: console
+    inputs:
+      - parse_logs
+    encoding:
+      codec: json
+
+  clickhouse:
+    type: clickhouse
+    inputs:
+      - parse_logs
+    compression: gzip
+    endpoint: "${CLICKHOUSE_HOST}"  # Address of ClickHouse server
+    database: "${CLICKHOUSE_DB}"  # ClickHouse database name
+    table: "${CLICKHOUSE_TABLE}"  # ClickHouse table name
+    encoding:
+      timestamp_format: unix
+    request:
+      retry_attempts: 3
+      retry_backoff_secs: 1
+    batch:
+      max_bytes: 10485760  # 10 MB
+      timeout_secs: 10
+    healthcheck: true
