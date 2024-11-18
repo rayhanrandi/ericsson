@@ -114,7 +114,7 @@ class Producer:
 
                     # Send data to Kafka
                     self._instance.send(self._kafka_topic, value=sensor_data)
-                    self.logger.info(f" [*] Sent data to Kafka: {sensor_data}")
+                    self.logger.info(f" [*] sent: {sensor_data}")
 
                     # simulate delays
                     # TODO: minimize delays
