@@ -3,7 +3,7 @@ version: '3.8'
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
-    container_name: zookeeper-proto
+    container_name: dwh-zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -11,11 +11,11 @@ services:
       - "2181:2181"
     user: "0:0"
     networks:
-      - data-stream 
+      - data-net
 
   kafka:
     image: confluentinc/cp-kafka:latest
-    container_name: kafka-proto
+    container_name: dwh-kafka
     depends_on:
       - zookeeper
     ports:
@@ -31,9 +31,9 @@ services:
       - data-net
     user: "0:0"
 
-  clickhouse-server-dwh:
+  clickhouse-server:
     image: clickhouse/clickhouse-server:24.3.13.40
-    container_name: clickhouse-server-dwh-proto
+    container_name: dwh-clickhouse-server
     ulimits:
       nofile:
         soft: 262144
@@ -42,8 +42,8 @@ services:
       - ./volumes/data-dwh:/var/lib/clickhouse
       - ./volumes/logs-dwh:/var/log/clickhouse-server
     ports:
-      - "8123:8123"
-      - "9000:9000"
+      - "8124:8123"
+      - "9001:9000"
     networks:
       - data-net
     cap_add:
