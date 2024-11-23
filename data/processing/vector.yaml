@@ -17,6 +17,5 @@ sinks:
   aggregator:
     type: vector
     inputs:
-      - data-stream
       - data-processing
     address: "${VECTOR_AGGREGATOR_SINK_ADDR}"
