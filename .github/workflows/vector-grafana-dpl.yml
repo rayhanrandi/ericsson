@@ -1,0 +1,42 @@
+name: Service Deployment - Vector Aggregator, Grafana
+
+on:
+  pull_request:
+    types:
+      - closed
+  push:
+    branches:
+      - main
+      # - ci-cd
+  
+jobs:
+  deployment:
+    name: Deploy to service to GCP Compute Engine instance
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install SSH client
+        run: sudo apt-get install openssh-client
+
+      - name: Export SSH key
+        run: echo "${{ secrets.SSH_KEY }}" > ssh-key.pem
+
+      - name: Update SSH key permissions
+        run: chmod 400 ssh-key.pem
+
+      - name: Connect to VM, clone repository, and cd to workdir
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ssh-key.pem ${{ secrets.LOG_INSTANCE_USERNAME }}@${{ secrets.LOG_INSTANCE_HOST }} "
+            git clone git@github.com:rayhanrandi/ericsson.git
+            
+      
+      - name: Setup variables & deploy services
+        run: |
+          cd ./logging &&
+          echo CLICKHOUSE_HOST=${{ secrets.LOG_CLICKHOUSE_HOST }} > .env || true &&
+          echo CLICKHOUSE_DB=${{ secrets.LOG_CLICKHOUSE_DB }} >> .env || true &&
+          echo CLICKHOUSE_TABLE=${{ secrets.LOG_CLICKHOUSE_TABLE }} >> .env || true &&
+          docker compose -f ./docker-compose.yml down || true &&
+          docker compose -f ./docker-compose.yml up

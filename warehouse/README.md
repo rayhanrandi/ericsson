@@ -1,4 +1,5 @@
-# Logging
+# Data & Log Warehouse 
+Contains configurations for OLAP Clickhouse DWH & Vector Aggregator.
 
 ## Prerequisites
 Open `clickhouse-client` , create logs database in Clickhouse, then the log_data table as follows:

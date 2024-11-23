@@ -1,0 +1,19 @@
+name: Service Deployment - Data Warehouse (Clickhouse OLAP2)
+
+on:
+  pull_request:
+    types:
+      - closed
+  push:
+    branches:
+      - main
+    #   - ci-cd
+
+jobs:
+  deployment:
+    name: Template
+    runs-on: ubuntu-latest
+    steps:
+      - name: Template
+        run: echo "Template"
+    

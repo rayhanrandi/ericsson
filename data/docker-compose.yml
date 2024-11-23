@@ -1,36 +1,7 @@
+# Data lake compose
 version: '3.8'
 
 services:
-  zookeeper:
-    image: confluentinc/cp-zookeeper:latest
-    container_name: dwh-zookeeper
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    ports:
-      - "2181:2181"
-    user: "0:0"
-    networks:
-      - data-net
-
-  kafka:
-    image: confluentinc/cp-kafka:latest
-    container_name: dwh-kafka
-    depends_on:
-      - zookeeper
-    ports:
-      - "9093:9093"
-    environment:
-      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:9092,OUTSIDE://localhost:9093
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
-      KAFKA_LISTENERS: INSIDE://0.0.0.0:9092,OUTSIDE://0.0.0.0:9093
-      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_CREATE_TOPICS: "sensor_data:1:1"
-    networks:
-      - data-net
-    user: "0:0"
-
   clickhouse-server:
     image: clickhouse/clickhouse-server:24.3.13.40
     container_name: dwh-clickhouse-server
@@ -39,13 +10,20 @@ services:
         soft: 262144
         hard: 262144
     volumes:
-      - ./volumes/data-dwh:/var/lib/clickhouse
-      - ./volumes/logs-dwh:/var/log/clickhouse-server
+      - ./volumes/data:/var/lib/clickhouse
+      - ./volumes/logs:/var/log/clickhouse-server
+      # auto seed clickhouse with required db and table
+      - ./migrations/1_init.sql:/docker-entrypoint-initdb.d/1_init.sql
     ports:
-      - "8124:8123"
-      - "9001:9000"
+      - "8123:8123"
+      - "9000:9000"
     networks:
-      - data-net
+      - lake-net
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8123/ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
     cap_add:
       - SYS_NICE
       - NET_ADMIN
@@ -53,5 +31,5 @@ services:
       - SYS_PTRACE
 
 networks:
-  data-net:
+  lake-net:
     driver: bridge

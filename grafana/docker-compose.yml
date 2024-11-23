@@ -1,3 +1,6 @@
+# Grafana & Vector Aggregator compose
+version: '3.8'
+
 services:
   grafana:
     image: grafana/grafana
@@ -6,9 +9,22 @@ services:
     ports:
      - '3000:3000'
     networks:
-      - log-net
+      - grafana-net
+
+  vector:
+    image: timberio/vector:0.42.0-alpine
+    container_name: log-vector
+    volumes:
+      - ./vector.yaml:/etc/vector/vector.yaml:ro
+    env_file:
+      - .env
+    ports:  
+      - "8686:8686"  # vector API
+      - "9000:9000"  # source endpoint for agents
+    networks:
+      - grafana-net
 
 networks:
-  log-net:
+  grafana-net:
     driver: bridge
   
