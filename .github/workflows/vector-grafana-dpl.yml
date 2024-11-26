@@ -30,13 +30,14 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i ssh-key.pem ${{ secrets.LOG_INSTANCE_USERNAME }}@${{ secrets.LOG_INSTANCE_HOST }}
             git clone git@github.com:rayhanrandi/ericsson.git
-            
       
+      # TODO: remove checkout to ci-cd
       - name: Setup variables, run services
         run: |
-          cd ./ericsson/grafana &&
-          echo CLICKHOUSE_HOST=${{ secrets.LOG_CLICKHOUSE_HOST }} > .env || true &&
-          echo CLICKHOUSE_DB=${{ secrets.LOG_CLICKHOUSE_DB }} >> .env || true &&
-          echo CLICKHOUSE_TABLE=${{ secrets.LOG_CLICKHOUSE_TABLE }} >> .env || true &&
+          cd ./ericsson || true && git checkout ci-cd || true &&
+          cd ./grafana || true &&
+          echo CLICKHOUSE_HOST=${{ secrets.WH_CLICKHOUSE_HOST }} > .env || true &&
+          echo CLICKHOUSE_DB=${{ secrets.WH_CLICKHOUSE_DB }} >> .env || true &&
+          echo CLICKHOUSE_TABLE=${{ secrets.WH_CLICKHOUSE_TABLE }} >> .env || true &&
           cd .. || true &&
           make grafana-up
