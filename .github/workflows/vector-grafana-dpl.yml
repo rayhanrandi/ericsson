@@ -27,22 +27,24 @@ jobs:
         run: chmod 400 ssh-key.pem
 
       - name: Connect to VM 
-        run: ssh -o StrictHostKeyChecking=no -i ssh-key.pem ${{ secrets.LOG_INSTANCE_USERNAME }}@${{ secrets.LOG_INSTANCE_HOST }}
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ssh-key.pem ${{ secrets.LOG_INSTANCE_USERNAME }}@${{ secrets.LOG_INSTANCE_HOST }}
+          ssh -vT git@github.com
             
-      - name: Dummy debug SSH deploy key 
-        run: ssh -vT git@github.com
+      # - name: Dummy debug SSH deploy key 
+      #   run: ssh -vT git@github.com
         
-      - name: Clone repository  
-        run: |
-          git clone git@github.com:rayhanrandi/ericsson.git
+      # - name: Clone repository  
+      #   run: |
+      #     git clone git@github.com:rayhanrandi/ericsson.git
       
-      # TODO: remove checkout to ci-cd
-      - name: Setup variables, run services
-        run: |
-          cd ./ericsson || true && git checkout ci-cd || true &&
-          cd ./grafana || true &&
-          echo CLICKHOUSE_HOST=${{ secrets.WH_CLICKHOUSE_HOST }} > .env || true &&
-          echo CLICKHOUSE_DB=${{ secrets.WH_CLICKHOUSE_DB }} >> .env || true &&
-          echo CLICKHOUSE_TABLE=${{ secrets.WH_CLICKHOUSE_TABLE }} >> .env || true &&
-          cd .. || true &&
-          make grafana-up
+      # # TODO: remove checkout to ci-cd
+      # - name: Setup variables, run services
+      #   run: |
+      #     cd ./ericsson || true && git checkout ci-cd || true &&
+      #     cd ./grafana || true &&
+      #     echo CLICKHOUSE_HOST=${{ secrets.WH_CLICKHOUSE_HOST }} > .env || true &&
+      #     echo CLICKHOUSE_DB=${{ secrets.WH_CLICKHOUSE_DB }} >> .env || true &&
+      #     echo CLICKHOUSE_TABLE=${{ secrets.WH_CLICKHOUSE_TABLE }} >> .env || true &&
+      #     cd .. || true &&
+      #     make grafana-up
