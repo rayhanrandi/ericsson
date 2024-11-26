@@ -83,6 +83,8 @@ stream-logs:
 # help
 help:
 	@echo "Available services: grafana, wh, lake, proc, stream"
+	@echo ""
+	@echo "Service description:"
 	@echo "grafana:"
 	@echo "  Main monitoring dashboard."
 	@echo "wh:"
@@ -90,9 +92,10 @@ help:
 	@echo "lake:"
 	@echo "  Data lake to store raw data for batch processes."
 	@echo "proc:"
-	@echo "	 Data processing platform to process raw data."
+	@echo "  Data processing platform to process raw data."
 	@echo "stream:"
 	@echo "  Data streaming platform to simulate real-time data inputs."
+	@echo ""
 	@echo "Usage:"
 	@echo "  make <service>-up    		- Start services with docker compose."
 	@echo "  make <service>-down  		- Stop and remove docker compose services."
