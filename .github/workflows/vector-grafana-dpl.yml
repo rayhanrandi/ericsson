@@ -7,7 +7,7 @@ on:
   push:
     branches:
       - main
-      # - ci-cd
+      - ci-cd
   
 jobs:
   deployment:
@@ -26,17 +26,17 @@ jobs:
       - name: Update SSH key permissions
         run: chmod 400 ssh-key.pem
 
-      - name: Connect to VM, clone repository, and cd to workdir
+      - name: Connect to VM, clone repository 
         run: |
           ssh -o StrictHostKeyChecking=no -i ssh-key.pem ${{ secrets.LOG_INSTANCE_USERNAME }}@${{ secrets.LOG_INSTANCE_HOST }} "
             git clone git@github.com:rayhanrandi/ericsson.git
             
       
-      - name: Setup variables & deploy services
+      - name: Setup variables, run services
         run: |
-          cd ./logging &&
+          cd ./ericsson/grafana &&
           echo CLICKHOUSE_HOST=${{ secrets.LOG_CLICKHOUSE_HOST }} > .env || true &&
           echo CLICKHOUSE_DB=${{ secrets.LOG_CLICKHOUSE_DB }} >> .env || true &&
           echo CLICKHOUSE_TABLE=${{ secrets.LOG_CLICKHOUSE_TABLE }} >> .env || true &&
-          docker compose -f ./docker-compose.yml down || true &&
-          docker compose -f ./docker-compose.yml up
+          cd .. || true &&
+          make grafana-up

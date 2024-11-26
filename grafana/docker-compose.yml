@@ -26,5 +26,4 @@ services:
 
 networks:
   grafana-net:
-    driver: bridge
   
