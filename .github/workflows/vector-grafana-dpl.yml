@@ -28,8 +28,9 @@ jobs:
 
       - name: Connect to VM 
         run: |
-          ssh -o StrictHostKeyChecking=no -i ssh-key.pem ${{ secrets.LOG_INSTANCE_USERNAME }}@${{ secrets.LOG_INSTANCE_HOST }}
-          ssh -vT git@github.com
+          ssh -o StrictHostKeyChecking=no -i ssh-key.pem ${{ secrets.LOG_INSTANCE_USERNAME }}@${{ secrets.LOG_INSTANCE_HOST }} << 'EOF'
+            ssh -vT git@github.c
+            EOF
             
       # - name: Dummy debug SSH deploy key 
       #   run: ssh -vT git@github.com
