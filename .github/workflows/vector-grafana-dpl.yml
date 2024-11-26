@@ -28,7 +28,7 @@ jobs:
 
       - name: Connect to VM, clone repository 
         run: |
-          ssh -o StrictHostKeyChecking=no -i ssh-key.pem ${{ secrets.LOG_INSTANCE_USERNAME }}@${{ secrets.LOG_INSTANCE_HOST }} "
+          ssh -o StrictHostKeyChecking=no -i ssh-key.pem ${{ secrets.LOG_INSTANCE_USERNAME }}@${{ secrets.LOG_INSTANCE_HOST }}
             git clone git@github.com:rayhanrandi/ericsson.git
             
       
