@@ -11,7 +11,7 @@ on:
   
 jobs:
   deployment:
-    name: Deploy to service to GCP Compute Engine instance
+    name: Vector Aggregator, Grafana
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
