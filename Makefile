@@ -7,7 +7,7 @@ STREAM_COMPOSE_PATH := ./data/stream/docker-compose.yml
 
 # run grafana service
 grafana-up:
-	docker compose -f $(GRAFANA_COMPOSE_PATH) up
+	docker compose -f $(GRAFANA_COMPOSE_PATH) up -d
 # stop grafana service
 grafana-down:
 	docker compose -f $(GRAFANA_COMPOSE_PATH) down
@@ -22,7 +22,7 @@ grafana-logs:
 
 # run warehouse service
 wh-up:
-	docker compose -f $(WAREHOUSE_COMPOSE_PATH) up
+	docker compose -f $(WAREHOUSE_COMPOSE_PATH) up -d
 # stop warehouse service
 wh-down:
 	docker compose -f $(WAREHOUSE_COMPOSE_PATH) down
@@ -37,7 +37,7 @@ wh-logs:
 
 # start data-lake service
 lake-up:
-	docker compose -f $(LAKE_COMPOSE_PATH) up
+	docker compose -f $(LAKE_COMPOSE_PATH) up -d
 # stop data-lake service
 lake-down:
 	docker compose -f $(LAKE_COMPOSE_PATH) down
@@ -52,7 +52,7 @@ lake-logs:
 
 # run data-proc service
 proc-up:
-	docker compose -f $(PROC_COMPOSE_PATH) up
+	docker compose -f $(PROC_COMPOSE_PATH) up -d
 # stop data-proc service
 proc-down:
 	docker-compose -f $(PROC_COMPOSE_PATH) down
