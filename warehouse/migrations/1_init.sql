@@ -1,4 +1,5 @@
 CREATE DATABASE IF NOT EXISTS logs;
+CREATE DATABASE IF NOT EXISTS warehouse;
 
 USE logs;
 
@@ -12,3 +13,5 @@ CREATE TABLE IF NOT EXISTS log_data (
     PRIMARY KEY (timestamp)
 ) ENGINE = MergeTree()
 ORDER BY timestamp;
+
+# TODO: create table for processed data

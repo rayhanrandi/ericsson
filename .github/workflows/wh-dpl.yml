@@ -2,18 +2,40 @@ name: Service Deployment - Data Warehouse (Clickhouse OLAP2)
 
 on:
   pull_request:
+    branches:
+      - main
     types:
       - closed
   push:
     branches:
       - main
-    #   - ci-cd
-
+      - ci-cd
+  
 jobs:
   deployment:
-    name: Template
+    name: Data Warehouse (Clickhouse OLAP2) 
     runs-on: ubuntu-latest
     steps:
-      - name: Template
-        run: echo "Template"
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install SSH client
+        run: sudo apt-get install openssh-client
+
+      - name: Export SSH key
+        run: echo "${{ secrets.SSH_KEY }}" > ssh-key.pem
+
+      - name: Update SSH key permissions
+        run: chmod 400 ssh-key.pem
+
+      # TODO: remove checkout to ci-cd
+      - name: Connect to VM & Deploy services
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ssh-key.pem ${{ secrets.WH_INSTANCE_USERNAME }}@${{ secrets.WH_INSTANCE_HOST }} << 'EOF'
+          rm -rf ericsson || true &&
+          git clone git@github.com:rayhanrandi/ericsson.git || true &&
+          cd ./ericsson || true && git checkout ci-cd || true &&    
+          make wh-up
+          EOF
+
     

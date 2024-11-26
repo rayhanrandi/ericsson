@@ -2,6 +2,8 @@ name: Service Deployment - Vector Aggregator, Grafana
 
 on:
   pull_request:
+    branches:
+      - main
     types:
       - closed
   push:
