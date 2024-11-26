@@ -6,10 +6,7 @@ from typing import Optional
 
 
 class Logger:
-    """
-    # TODO: 
-    - Propagate logs to Clickhouse, then Grafana.
-    """
+    
     def __init__(self) -> None:
         self._logger: Optional[logging.Logger] = None
 

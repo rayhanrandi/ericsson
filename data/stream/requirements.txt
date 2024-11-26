@@ -1,2 +1,3 @@
+fastapi[standard]
 kafka-python
 python-dotenv

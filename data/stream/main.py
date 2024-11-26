@@ -1,23 +1,17 @@
-import os
+import threading
 import time
 
 from dotenv import load_dotenv
+from fastapi import FastAPI
 
 from brokers.kafka import Producer
+from config.utils import get_env_value
 
 
-if __name__ == '__main__':
-
-    load_dotenv()
-
-    kafka_broker = os.getenv('KAFKA_BROKER')
-    kafka_topic = os.getenv('KAFKA_TOPIC')
-
-    producer = Producer(
-        kafka_broker, 
-        kafka_topic
-    )
-
+def produce(producer: Producer) -> None:
+    """
+    Run producer instance.
+    """
     try:
         producer.create_instance()
         # allow client to connect
@@ -27,3 +21,32 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         producer.logger.info(" [*] Stopping data generation.")
         exit(1)
+
+
+load_dotenv()
+
+# run healthcheck server
+app = FastAPI()
+
+@app.get("/ping")
+async def healthcheck():
+    return { "status": "healthy" }
+
+kafka_broker = get_env_value('KAFKA_BROKER')
+kafka_topic = get_env_value('KAFKA_TOPIC')
+
+producer = Producer(
+    kafka_broker, 
+    kafka_topic
+)
+
+producer.logger.info(f' [*] Healthcheck running on port 8000.')
+
+# run producer
+t_producer = threading.Thread(
+    target=produce,
+    args=(producer,),
+    daemon=True
+)
+t_producer.start()
+

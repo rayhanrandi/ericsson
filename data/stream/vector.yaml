@@ -10,7 +10,7 @@ sinks:
   console:
     type: console
     inputs:
-      - parse_logs
+      - data-stream 
     encoding:
       codec: json
 
