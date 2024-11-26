@@ -26,10 +26,15 @@ jobs:
       - name: Update SSH key permissions
         run: chmod 400 ssh-key.pem
 
-      - name: Connect to VM, clone repository 
+      - name: Connect to VM 
+        run: ssh -o StrictHostKeyChecking=no -i ssh-key.pem ${{ secrets.LOG_INSTANCE_USERNAME }}@${{ secrets.LOG_INSTANCE_HOST }}
+            
+      - name: Dummy debug SSH deploy key 
+        run: ssh -vT git@github.com
+        
+      - name: Clone repository  
         run: |
-          ssh -o StrictHostKeyChecking=no -i ssh-key.pem ${{ secrets.LOG_INSTANCE_USERNAME }}@${{ secrets.LOG_INSTANCE_HOST }}
-            git clone git@github.com:rayhanrandi/ericsson.git
+          git clone git@github.com:rayhanrandi/ericsson.git
       
       # TODO: remove checkout to ci-cd
       - name: Setup variables, run services
