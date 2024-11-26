@@ -68,11 +68,11 @@ services:
       - "8000:8000"
     networks:
       - data-net
-    # healthcheck:
-    #   test: curl -f http://localhost:8000/ping || exit 1
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 3
+    healthcheck:
+      test: curl -f http://localhost:8000/ping || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   vector:
     depends_on:
