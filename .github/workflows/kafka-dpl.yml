@@ -1,4 +1,4 @@
-name: Service Deployment
+name: Kafka Producer
 
 on:
   pull_request:
@@ -10,7 +10,7 @@ on:
     #   - ci-cd
 
 jobs:
-  deployment:
+  deployment: Service Deployment
     name: Kafka
     runs-on: ubuntu-latest
     steps:
