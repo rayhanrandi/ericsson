@@ -38,4 +38,3 @@ services:
 
 networks:
   lake-net:
-    driver: bridge
