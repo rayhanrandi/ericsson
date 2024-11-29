@@ -37,7 +37,7 @@ jobs:
           sudo rm -rf ericsson || true &&
           git clone git@github.com:rayhanrandi/ericsson.git || true &&
           cd ./ericsson || true && git checkout ci-cd || true &&
-          cp ~/volumes/ ./warehouse || true &&    
+          cp -r ~/volumes/ ./warehouse || true &&    
           make wh-up
           EOF
 

@@ -29,7 +29,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
-    user: "${UID:-$(id -u)}:${GID:-$(id -g)}"
+    user: root
     cap_add:
       - SYS_NICE
       - NET_ADMIN
