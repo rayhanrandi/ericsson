@@ -40,5 +40,5 @@ jobs:
           echo CLICKHOUSE_DB=${{ secrets.WH_CLICKHOUSE_DB }} >> .env || true &&
           echo CLICKHOUSE_TABLE=${{ secrets.WH_CLICKHOUSE_TABLE }} >> .env || true &&
           cd .. || true &&
-          make grafana-up
+          make grafana-down || true && make grafana-up || true
           EOF

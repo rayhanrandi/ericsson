@@ -55,7 +55,7 @@ proc-up:
 	docker compose -f $(PROC_COMPOSE_PATH) up -d
 # stop data-proc service
 proc-down:
-	docker-compose -f $(PROC_COMPOSE_PATH) down
+	docker compose -f $(PROC_COMPOSE_PATH) down
 # restart data-proc service
 proc-restart: 
 	proc-down 
@@ -70,7 +70,7 @@ stream-up:
 	docker compose -f $(STREAM_COMPOSE_PATH) up --build -d
 # stop data-stream service
 stream-down:
-	docker-compose -f $(STREAM_COMPOSE_PATH) down
+	docker compose -f $(STREAM_COMPOSE_PATH) down
 # restart data-stream service
 stream-restart: 
 	stream-down 

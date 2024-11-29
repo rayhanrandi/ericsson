@@ -38,7 +38,7 @@ jobs:
           git clone git@github.com:rayhanrandi/ericsson.git || true &&
           cd ./ericsson || true && git checkout ci-cd || true &&
           cp -r ~/volumes/ ./data || true &&    
-          make lake-up
+          make lake-down || true && make lake-up || true
           EOF
 
     

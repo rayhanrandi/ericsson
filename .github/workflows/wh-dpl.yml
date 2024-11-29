@@ -38,7 +38,7 @@ jobs:
           git clone git@github.com:rayhanrandi/ericsson.git || true &&
           cd ./ericsson || true && git checkout ci-cd || true &&
           cp -r ~/volumes/ ./warehouse || true &&    
-          make wh-up
+          make wh-down || true && make wh-up || true
           EOF
 
     
