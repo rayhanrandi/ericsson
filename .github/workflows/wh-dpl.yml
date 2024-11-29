@@ -33,7 +33,7 @@ jobs:
       - name: Connect to VM & Deploy services
         run: |
           ssh -o StrictHostKeyChecking=no -i ssh-key.pem ${{ secrets.WH_INSTANCE_USERNAME }}@${{ secrets.WH_INSTANCE_HOST }} << 'EOF'
-          [ -d "~/ericsson/warehouse/volumes/" ] && cp -r ericsson/warehouse/volumes/ ~/ || true &&
+          [ -d "$(PWD)/ericsson/warehouse/volumes/" ] && cp -r ericsson/warehouse/volumes/ ~/ || true &&
           sudo rm -rf ericsson || true &&
           git clone git@github.com:rayhanrandi/ericsson.git || true &&
           cd ./ericsson || true && git checkout ci-cd || true &&
