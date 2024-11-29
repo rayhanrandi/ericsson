@@ -39,6 +39,6 @@ jobs:
           echo KAFKA_TOPIC=${{ secrets.PRODUCER_KAFKA_TOPIC }} >> .env || true &&
           echo VECTOR_AGGREGATOR_SINK_ADDR=${{ secrets.VECTOR_AGGREGATOR_SINK_ADDR }} >> .env || true &&
           cd ../.. || true &&
-          make grafana-up
+          make stream-up
           EOF
     
