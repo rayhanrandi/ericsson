@@ -1,4 +1,4 @@
-name: Service Deployment - Data Warehouse (Clickhouse OLAP2)
+name: Service Deployment
 
 on:
   pull_request:

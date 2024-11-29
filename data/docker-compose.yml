@@ -5,13 +5,18 @@ services:
   clickhouse-server:
     image: clickhouse/clickhouse-server:24.3.13.40
     container_name: dwh-clickhouse-server
+    environment:
+      - CLICKHOUSE_INIT_TIMEOUT=60
+      # clickhouse data permission
+      - CLICKHOUSE_UID=101
+      - CLICKHOUSE_GID=101
     ulimits:
       nofile:
         soft: 262144
         hard: 262144
     volumes:
-      - ./volumes/data:/var/lib/clickhouse
-      - ./volumes/logs:/var/log/clickhouse-server
+      - ./volumes/data-lake:/var/lib/clickhouse
+      - ./volumes/logs-lake:/var/log/clickhouse-server
       # auto seed clickhouse with required db and table
       - ./migrations/1_init.sql:/docker-entrypoint-initdb.d/1_init.sql
     ports:
@@ -24,6 +29,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+    user: "101:101"
     cap_add:
       - SYS_NICE
       - NET_ADMIN
