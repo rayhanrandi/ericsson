@@ -1,0 +1,21 @@
+sources:
+  data-processing:
+    type: file
+    include: 
+      - /var/log/data/processing/*.log  
+    ignore_older: 604800  
+
+sinks:
+  # Optional debug sink to see what's being processed
+  console:
+    type: console
+    inputs:
+      - parse_logs
+    encoding:
+      codec: json
+
+  aggregator:
+    type: vector
+    inputs:
+      - data-processing
+    address: "${VECTOR_AGGREGATOR_SINK_ADDR}"
