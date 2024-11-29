@@ -30,7 +30,7 @@ jobs:
       - name: Connect to VM & Deploy services
         run: |
           ssh -o StrictHostKeyChecking=no -i ssh-key.pem ${{ secrets.PRODUCER_INSTANCE_USERNAME }}@${{ secrets.PRODUCER_INSTANCE_HOST }} << 'EOF'
-          [ -d "$(pwd)/ericsson/data/volumes/" ] && rm -rf ericsson || true &&
+          [ -d "$(pwd)/ericsson" ] && rm -rf ericsson || true &&
           git clone git@github.com:rayhanrandi/ericsson.git || true &&
           cd ./ericsson || true && git checkout ci-cd || true &&
           cd ./data/stream || true &&
