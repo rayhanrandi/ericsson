@@ -36,7 +36,7 @@ services:
     networks:
       - data-net
     healthcheck:
-      test: kafka-topics --bootstrap-server broker:9092 --list
+      test: kafka-topics --bootstrap-server kafka:9092 --list
       interval: 30s
       timeout: 10s
       retries: 3
