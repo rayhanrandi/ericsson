@@ -1,4 +1,4 @@
-name: Service Deployment - Kafka
+name: Kafka Producer
 
 on:
   pull_request:
@@ -7,13 +7,38 @@ on:
   push:
     branches:
       - main
-    #   - ci-cd
-
+      - ci-cd
+    
 jobs:
   deployment:
-    name: Template
+    name: Service Deployment
     runs-on: ubuntu-latest
     steps:
-      - name: Template
-        run: echo "Template"
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install SSH client
+        run: sudo apt-get install openssh-client
+
+      - name: Export SSH key
+        run: echo "${{ secrets.SSH_KEY }}" > ssh-key.pem
+
+      - name: Update SSH key permissions
+        run: chmod 400 ssh-key.pem
+
+      # TODO: remove checkout to ci-cd
+      - name: Connect to VM & Deploy services
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ssh-key.pem ${{ secrets.PRODUCER_INSTANCE_USERNAME }}@${{ secrets.PRODUCER_INSTANCE_HOST }} << 'EOF'
+          [ -d "$(pwd)/ericsson" ] && rm -rf ericsson || true &&
+          git clone git@github.com:rayhanrandi/ericsson.git || true &&
+          cd ./ericsson || true && git checkout ci-cd || true &&
+          cd ./data/stream || true &&
+          echo LOG_LEVEL=${{ secrets.PRODUCER_LOG_LEVEL }} > .env || true &&
+          echo KAFKA_BROKER=${{ secrets.PRODUCER_KAFKA_BROKER }} >> .env || true &&
+          echo KAFKA_TOPIC=${{ secrets.PRODUCER_KAFKA_TOPIC }} >> .env || true &&
+          echo VECTOR_AGGREGATOR_SINK_ADDR=${{ secrets.VECTOR_AGGREGATOR_SINK_ADDR }} >> .env || true &&
+          cd ../.. || true &&
+          make stream-down || true && make stream-up || true
+          EOF
     

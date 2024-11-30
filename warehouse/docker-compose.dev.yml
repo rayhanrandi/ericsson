@@ -1,10 +1,10 @@
-# Data lake compose
+# Data warehouse compose
 version: '3.8'
 
 services:
   clickhouse-server:
     image: clickhouse/clickhouse-server:24.3.13.40
-    container_name: dwh-clickhouse-server
+    container_name: log-clickhouse-server
     environment:
       - CLICKHOUSE_INIT_TIMEOUT=60
       # clickhouse data permission
@@ -15,15 +15,15 @@ services:
         soft: 262144
         hard: 262144
     volumes:
-      - ./volumes/data-lake:/var/lib/clickhouse
-      - ./volumes/logs-lake:/var/log/clickhouse-server
+      - ./volumes/data-log:/var/lib/clickhouse
+      - ./volumes/logs-log:/var/log/clickhouse-server
       # auto seed clickhouse with required db and table
       - ./migrations/1_init.sql:/docker-entrypoint-initdb.d/1_init.sql
     ports:
       - "8123:8123"
-      - "9000:9000"
+      - "9001:9001"
     networks:
-      - lake-net
+      - grafana_grafana-net
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8123/ping"]
       interval: 5s
@@ -37,4 +37,5 @@ services:
       - SYS_PTRACE
 
 networks:
-  lake-net:
+  grafana_grafana-net:
+    external: true

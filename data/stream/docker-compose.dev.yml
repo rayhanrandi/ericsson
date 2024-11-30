@@ -11,7 +11,7 @@ services:
     ports:
       - "2181:2181"
     networks: 
-      - data-net
+      - grafana_grafana-net
     healthcheck:
       test: nc -z localhost 2181 || exit -1
       interval: 10s
@@ -34,7 +34,7 @@ services:
     ports:
       - "9093:9093"
     networks:
-      - data-net
+      - grafana_grafana-net
     healthcheck:
       test: kafka-topics --bootstrap-server kafka:9092 --list
       interval: 30s
@@ -67,7 +67,7 @@ services:
     ports:
       - "8000:8000"
     networks:
-      - data-net
+      - grafana_grafana-net
     healthcheck:
       test: curl -f http://localhost:8000/ping || exit 1
       interval: 30s
@@ -75,7 +75,7 @@ services:
       retries: 3
     user: "0:0"
 
-  vector:
+  vector-stream:
     depends_on:
       - producer
     image: timberio/vector:0.42.0-alpine
@@ -87,13 +87,13 @@ services:
     env_file:
       - .env
     ports:  
-      - "8686:8686"
+      - "8687:8687"
     networks:
-      - data-net
+      - grafana_grafana-net
 
 networks:
-  data-net:
-    driver: bridge
+  grafana_grafana-net:
+    external: true
 
 volumes:
   log_data: 

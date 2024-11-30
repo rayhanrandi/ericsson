@@ -1,4 +1,4 @@
-name: Service Deployment - Vector Aggregator, Grafana
+name: Vector Aggregator & Grafana
 
 on:
   pull_request:
@@ -13,7 +13,7 @@ on:
   
 jobs:
   deployment:
-    name: Vector Aggregator, Grafana
+    name: Service Deployment
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -32,7 +32,7 @@ jobs:
       - name: Connect to VM & Deploy services
         run: |
           ssh -o StrictHostKeyChecking=no -i ssh-key.pem ${{ secrets.LOG_INSTANCE_USERNAME }}@${{ secrets.LOG_INSTANCE_HOST }} << 'EOF'
-          rm -rf ericsson || true &&
+          [ -d "$(pwd)/ericsson" ] && rm -rf ericsson || true &&
           git clone git@github.com:rayhanrandi/ericsson.git || true &&
           cd ./ericsson || true && git checkout ci-cd || true &&
           cd ./grafana || true &&
@@ -40,5 +40,5 @@ jobs:
           echo CLICKHOUSE_DB=${{ secrets.WH_CLICKHOUSE_DB }} >> .env || true &&
           echo CLICKHOUSE_TABLE=${{ secrets.WH_CLICKHOUSE_TABLE }} >> .env || true &&
           cd .. || true &&
-          make grafana-up
+          make grafana-down || true && make grafana-up || true
           EOF
