@@ -42,3 +42,4 @@ jobs:
           cd .. || true &&
           make grafana-down || true && make grafana-up || true
           EOF
+
