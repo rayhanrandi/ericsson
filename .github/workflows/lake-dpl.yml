@@ -9,7 +9,6 @@ on:
   push:
     branches:
       - main
-      - ci-cd
   
 jobs:
   deployment:
@@ -36,7 +35,7 @@ jobs:
           [ -d "$(pwd)/ericsson/data/volumes/" ] && sudo cp -r ~/ericsson/data/volumes/ ~/ || true &&
           sudo rm -rf ericsson || true &&
           git clone git@github.com:rayhanrandi/ericsson.git || true &&
-          cd ./ericsson || true && git checkout ci-cd || true &&
+          cd ./ericsson || true && 
           sudo cp -r ~/volumes/ ./data || true &&    
           make lake-down || true && make lake-up || true
           EOF
