@@ -10,7 +10,7 @@ from config.utils import setup_env, get_env_value
 
 def run_cron():
     """
-    Run LLM calls in set interval with cron
+    Run LLM calls in set interval with cron.
     """
     logger = Logger.setup_logger("rag")
 

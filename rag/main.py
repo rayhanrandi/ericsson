@@ -1,33 +1,20 @@
 from datetime import datetime
 
-from langchain.prompts import ChatPromptTemplate
-
-from langchain_community.document_loaders import JSONLoader
-from langchain_community.embeddings import OpenAIEmbeddings
-from langchain_community.vectorstores import (
-    Clickhouse, 
-    ClickhouseSettings
-)
-from langchain_huggingface import HuggingFaceEmbeddings
-
 from langchain_core.prompts import PromptTemplate
 
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnableLambda, RunnablePassthrough
-
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-
+from config.db.clickhouse import ClickhouseClient
 from config.logging import Logger
 from config.utils import setup_env, get_env_value
+from dotenv import load_dotenv
 
 from rag.query import LLMQuery
 from rag.response import LLMResponse
-from sql.postgresql import PostgreSQLClient
 
 
 logger = Logger().setup_logger("rag")
 
-setup_env()
+load_dotenv()
+
 
 template = '''You are a PostgreSQL expert. Given an input question, first create a syntactically correct PostgreSQL query to run, then look at the results of the query and return the answer to the input question.
 You have access to a database containing a variety of historical and recent data entries from an observability monitoring system.
@@ -100,11 +87,11 @@ Only use the following tables:
 Question: {input}"""
 
 q = LLMQuery(
-    db_host=get_env_value("DB_HOST"),
-    db_port=get_env_value("DB_PORT"),
-    db_user=get_env_value("DB_USER"),
-    db_password=get_env_value("DB_PASSWORD"),
-    db_name=get_env_value("DB_NAME"),
+    db_host=get_env_value("CLICKHOUSE_HOST"),
+    db_port=get_env_value("CLICKHOUSE_PORT"),
+    db_user=get_env_value("CLICKHOUSE_USER"),
+    db_password=get_env_value("CLICKHOUSE_PASSWORD"),
+    db_name=get_env_value("CLICKHOUSE_DATABASE"),
     together_endpoint=get_env_value("TOGETHER_ENDPOINT"),
     together_api_key=get_env_value("TOGETHER_API_KEY"),
     together_llm_model=get_env_value("TOGETHER_LLM_MODEL"),
@@ -141,7 +128,8 @@ llm_response = LLMResponse(
 )
 
 question = f'''What is the overall analysis of the data from the last {get_env_value("DATA_INTERVAL")} minutes? 
-Are there any key insights or observabilities? 
+Are there any key insights or observabilities?
+Are there any outlier data based on the prediction column?
 Are there any possible mitigations to perform if there are any issues?'''
 
 
@@ -153,19 +141,23 @@ logger.info( f' [*] LLM response: \n{summary}')
 
 timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-sql_client = PostgreSQLClient(
-    host=get_env_value("DB_HOST"),
-    port=get_env_value("DB_PORT"),
-    user=get_env_value("DB_USER"),
-    password=get_env_value("DB_PASSWORD"),
-    database=get_env_value("DB_NAME")
+ch_client = ClickhouseClient(
+    host=get_env_value("CLICKHOUSE_HOST"),
+    port=get_env_value("CLICKHOUSE_PORT"),
+    user=get_env_value("CLICKHOUSE_USER"),
+    password=get_env_value("CLICKHOUSE_PASSWORD"),
+    database=get_env_value("CLICKHOUSE_DATABASE"),
+    table=get_env_value("CLICKHOUSE_SUMMARY_TABLE")
 )
-table = get_env_value('DB_TABLE') 
 
-query = f"""INSERT INTO {table} (summary, time) VALUES(E'{summary}', '{timestamp}')"""
+# query = f"""INSERT INTO {table} (summary, time) VALUES(E'{summary}', '{timestamp}')"""
+values = { 
+    "timestamp": timestamp,
+    "summary": summary
+}
 
 try:
-    query_code = sql_client.query(query)
+    query_code = ch_client.execute_insert(values)
 except Exception as e:
     logger.error(f' [x] Query failed: {e}')
 

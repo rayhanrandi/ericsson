@@ -20,8 +20,9 @@ class LLMQuery:
         template: str,
         db_password: str = None
     ):
-        self.db_uri = f'postgresql+psycopg2://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}'
+        self.db_uri = f'clickhouse+{db_host}:{db_port}/{db_name}'
         self.db = SQLDatabase.from_uri(self.db_uri)
+
         self.llm = ChatOpenAI(
             base_url=together_endpoint,
             api_key=together_api_key,

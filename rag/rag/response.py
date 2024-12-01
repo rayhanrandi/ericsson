@@ -34,7 +34,7 @@ class LLMResponse:
         response = chain.invoke({
             "top_k": None,
             "question": question,
-            "table_info": get_env_value("DB_TABLE")
+            "table_info": get_env_value("CLICKHOUSE_ANALYSIS_TABLE")
         })
         return response
        
