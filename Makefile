@@ -3,6 +3,7 @@ WAREHOUSE_COMPOSE_PATH := ./warehouse/docker-compose.yml
 LAKE_COMPOSE_PATH := ./data/docker-compose.yml
 PROC_COMPOSE_PATH := ./data/processing/docker-compose.yml
 STREAM_COMPOSE_PATH := ./data/stream/docker-compose.yml
+RAG_COMPOSE_PATH := ./rag/docker-compose.yml
 
 
 # run grafana service
