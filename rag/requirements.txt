@@ -1,4 +1,5 @@
 clickhouse-connect
+fastapi[standard]
 langchain
 langchain-community
 langchain-core
