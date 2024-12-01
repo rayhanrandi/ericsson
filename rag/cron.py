@@ -1,13 +1,20 @@
+import threading
+
 from crontab import CronTab
+from dotenv import load_dotenv
+from fastapi import FastAPI
 
 from config.logging import Logger
 from config.utils import setup_env, get_env_value
 
 
-def main():
-    setup_env()
-
+def run_cron():
+    """
+    Run LLM calls in set interval with cron
+    """
     logger = Logger.setup_logger("rag")
+
+    logger.info(f' [*] Healthcheck running on port 8000.')
 
     # instantiate cron, automatically run `cron.write()` on exit
     with CronTab(user=True) as cron:
@@ -23,6 +30,17 @@ def main():
         logger.info(f"Cron job instantiated: {job}")
 
 
-if __name__ == '__main__':
-    main()
-    
+load_dotenv()
+
+# run healthcheck server
+app = FastAPI()
+
+@app.get("/ping")
+async def healthcheck():
+    return { "status": "healthy" }
+
+t_cron = threading.Thread(
+    target=run_cron,
+    daemon=True
+)
+t_cron.start() 
