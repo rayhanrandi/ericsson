@@ -79,6 +79,21 @@ stream-restart:
 stream-logs:
 	docker compose -f $(STREAM_COMPOSE_PATH) logs
 
+
+# run rag service
+rag-up:
+	docker compose -f $(RAG_COMPOSE_PATH) up --build -d
+# stop rag service
+rag-down:
+	docker compose -f $(RAG_COMPOSE_PATH) down
+# restart rag service
+rag-restart: 
+	rag-down 
+	rag-up
+# view rag logs
+rag-logs:
+	docker compose -f $(RAG_COMPOSE_PATH) logs
+
 	
 # help
 help:
@@ -95,6 +110,8 @@ help:
 	@echo "  Data processing platform to process raw data."
 	@echo "stream:"
 	@echo "  Data streaming platform to simulate real-time data inputs."
+	@echo "rag:"
+	@echo "  LLM based RAG service to generate insights from real-time data.
 	@echo ""
 	@echo "Usage:"
 	@echo "  make <service>-up    		- Start services with docker compose."
