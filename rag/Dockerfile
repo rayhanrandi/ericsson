@@ -56,5 +56,13 @@ COPY . /app
 RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
 
+# Install cron and busybox
+RUN apt-get update \
+  && apt-get install -y \
+    cron
+
+# https://stackoverflow.com/a/37458519
+RUN chmod 0744 ./main.py
+
 # During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
 CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port 8000"]
