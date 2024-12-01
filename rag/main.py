@@ -57,6 +57,7 @@ Summary of Required Analysis:
 - Total number of records in the requested time interval
 - Average values, high/low points, or spikes observed in the recent data (if applicable) for all columns.
 - Any notable patterns or deviations from expected values in the requested time interval.
+- Are there any outliers based on the prediction column.
 
 Instructions:
 1. Based on the provided data, summarize any observed patterns, trends, or potential anomalies from the requested time interval only.
