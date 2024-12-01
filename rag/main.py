@@ -15,8 +15,10 @@ logger = Logger().setup_logger("rag")
 
 load_dotenv()
 
+logger.info(f' [*] Starting LLM call...')
 
-template = '''You are a PostgreSQL expert. Given an input question, first create a syntactically correct PostgreSQL query to run, then look at the results of the query and return the answer to the input question.
+
+template = '''You are a Clickhouse SQL expert. Given an input question, first create a syntactically correct Clickhouse SQL query to run, then look at the results of the query and return the answer to the input question.
 You have access to a database containing a variety of historical and recent data entries from an observability monitoring system.
 For this task, focus only on date and time constraint provided in the question. That means that you have to query for rows where the time between now (NOW()) and the requested time is valid.
 Your analysis should not consider data older than this time window, even if it is accessible. 
@@ -87,11 +89,12 @@ Only use the following tables:
 
 Question: {input}"""
 
+logger.info(' [*] Setting up LLM query...')
 q = LLMQuery(
     db_host=get_env_value("CLICKHOUSE_HOST"),
     db_port=get_env_value("CLICKHOUSE_PORT"),
-    db_user=get_env_value("CLICKHOUSE_USER"),
-    db_password=get_env_value("CLICKHOUSE_PASSWORD"),
+    db_user=get_env_value("CLICKHOUSE_USERNAME"),
+    # db_password=get_env_value("CLICKHOUSE_PASSWORD"),
     db_name=get_env_value("CLICKHOUSE_DATABASE"),
     together_endpoint=get_env_value("TOGETHER_ENDPOINT"),
     together_api_key=get_env_value("TOGETHER_API_KEY"),
@@ -123,12 +126,13 @@ Do NOT mention anything regarding SQL/SQL queries or any errors!
 
 Answer:""")
 
+logger.info(f' [*] Setting up LLM response...')
 llm_response = LLMResponse(
     answer_prompt=answer_prompt,
     llm_query=q
 )
 
-question = f'''What is the overall analysis of the data from the last {get_env_value("DATA_INTERVAL")} minutes? 
+question = f'''What is the overall analysis of the data from the last {get_env_value("DATA_INTERVAL")} days? 
 Are there any key insights or observabilities?
 Are there any outlier data based on the prediction column?
 Are there any possible mitigations to perform if there are any issues?'''
@@ -136,7 +140,8 @@ Are there any possible mitigations to perform if there are any issues?'''
 
 # save summary to db for grafana dashboard query
 # conform to sql escape characters
-summary = llm_response.get_response(question).replace("'", "''")
+logger.info(' [*] Calling LLM...')
+summary = llm_response.get_response(question)
 
 logger.info( f' [*] LLM response: \n{summary}')
 
@@ -145,13 +150,12 @@ timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 ch_client = ClickhouseClient(
     host=get_env_value("CLICKHOUSE_HOST"),
     port=get_env_value("CLICKHOUSE_PORT"),
-    user=get_env_value("CLICKHOUSE_USER"),
-    password=get_env_value("CLICKHOUSE_PASSWORD"),
+    user=get_env_value("CLICKHOUSE_USERNAME"),
+    # password=get_env_value("CLICKHOUSE_PASSWORD"),
     database=get_env_value("CLICKHOUSE_DATABASE"),
     table=get_env_value("CLICKHOUSE_SUMMARY_TABLE")
 )
 
-# query = f"""INSERT INTO {table} (summary, time) VALUES(E'{summary}', '{timestamp}')"""
 values = { 
     "timestamp": timestamp,
     "summary": summary
@@ -160,6 +164,6 @@ values = {
 try:
     query_code = ch_client.execute_insert(values)
 except Exception as e:
-    logger.error(f' [x] Query failed: {e}')
+    logger.error(f' [X] Query failed: {e}')
 
-logger.info(f' [*] Query successful with code {query_code}.')
+logger.info(f' [*] Query executed with result: {str(type(query_code)) or "unsuccessful 400"}.')

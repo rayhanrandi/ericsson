@@ -57,8 +57,8 @@ RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /
 USER appuser
 
 # Install cron and busybox
-RUN apt-get update \
-  && apt-get install -y \
+RUN sudo apt-get update \
+  && sudo apt-get install -y \
     cron
 
 # https://stackoverflow.com/a/37458519

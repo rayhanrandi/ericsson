@@ -14,13 +14,13 @@ class LLMQuery:
     
     def __init__(
         self,
-        db_user: str, db_host: str, db_port: str, db_name: str,
+        db_host: str, db_port: str, db_name: str,
         together_endpoint: str, together_api_key: str, together_llm_model: str,
         input_variables: list[str],
         template: str,
-        db_password: str = None
+        db_user: str = '', db_password: str = ''
     ):
-        self.db_uri = f'clickhouse+{db_host}:{db_port}/{db_name}'
+        self.db_uri = f'clickhouse+http://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}'
         self.db = SQLDatabase.from_uri(self.db_uri)
 
         self.llm = ChatOpenAI(
