@@ -48,5 +48,5 @@ jobs:
           echo CLICKHOUSE_SUMMARY_TABLE=${{ secrets.RAG_CLICKHOUSE_SUMMARY_TABLE }} >> .env || true &&
           echo VECTOR_AGGREGATOR_SINK_ADDR=${{ secrets.VECTOR_AGGREGATOR_SINK_ADDR }} >> .env || true &&
           cd ../.. || true &&
-          make llm-down || true && make llm-up || true
+          make rag-down || true && make rag-up || true
           EOF
