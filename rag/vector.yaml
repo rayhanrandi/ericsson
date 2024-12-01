@@ -1,0 +1,21 @@
+sources:
+  rag:
+    type: file
+    include: 
+      - /var/log/data/rag/*.log  # Path to log files. Update as needed.
+    ignore_older: 604800  # Ignore files older than 7 days (in seconds).
+
+sinks:
+  # Optional debug sink to see what's being processed
+  console:
+    type: console
+    inputs:
+      - rag
+    encoding:
+      codec: json
+
+  aggregator:
+    type: vector
+    inputs:
+      - rag
+    address: "${VECTOR_AGGREGATOR_SINK_ADDR}"

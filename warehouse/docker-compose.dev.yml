@@ -15,9 +15,8 @@ services:
         soft: 262144
         hard: 262144
     volumes:
-      - ./volumes/data-log:/var/lib/clickhouse
-      - ./volumes/logs-log:/var/log/clickhouse-server
-      # auto seed clickhouse with required db and table
+      # auto seed clickhouse with required db and table data
+      - ./sample_data/:/etc/sample_data/
       - ./migrations/1_init.sql:/docker-entrypoint-initdb.d/1_init.sql
     ports:
       - "8123:8123"
@@ -29,7 +28,6 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
-    user: root
     cap_add:
       - SYS_NICE
       - NET_ADMIN

@@ -1,0 +1,11 @@
+clickhouse-connect
+clickhouse-sqlalchemy
+fastapi[standard]
+langchain
+langchain-community
+langchain-core
+langchain-openai
+psycopg2-binary
+python-crontab
+python-dotenv
+sentence_transformers
