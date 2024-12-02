@@ -30,7 +30,6 @@ CREATE TABLE IF NOT EXISTS analysis (
     accel_x Float64,
     accel_y Float64,
     accel_z Float64,
-    cluster Int64,
     prediction Int64,
     PRIMARY KEY (timestamp)
 ) ENGINE = MergeTree()
