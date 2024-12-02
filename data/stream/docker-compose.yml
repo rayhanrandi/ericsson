@@ -31,6 +31,7 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_CREATE_TOPICS: "sensor_data:1:1"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     ports:
       - "9093:9093"
     networks:

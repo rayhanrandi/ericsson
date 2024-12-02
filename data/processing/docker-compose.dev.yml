@@ -27,9 +27,9 @@ services:
              chmod 644 /app/logs/consumer.log
              uvicorn main:app --host 0.0.0.0 --port 8000"
     ports:
-      - "8000:8000"
+      - "8001:8000"
     networks:
-      - data-net
+      - grafana_grafana-net
     healthcheck:
       test: curl -f http://localhost:8000/ping || exit 1
       interval: 30s
@@ -37,11 +37,11 @@ services:
       retries: 3
     user: "0:0"
 
-  vector:
+  vector-proc:
     depends_on:
       - consumer
     image: timberio/vector:0.42.0-alpine
-    container_name: vector
+    container_name: vector-proc
     volumes:
       - ./vector.yaml:/etc/vector/vector.yaml:ro
       # mount log file paths as necessary with :ro read only permissions
@@ -49,13 +49,13 @@ services:
     env_file:
       - .env
     ports:  
-      - "8686:8686"
+      - "8688:8688"
     networks:
-      - data-net
+      - grafana_grafana-net
 
 networks:
-  data-net:
-    driver: bridge
+  grafana_grafana-net:
+    external: true
 
 volumes:
   log_data: 
