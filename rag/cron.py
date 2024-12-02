@@ -12,7 +12,7 @@ def run_cron():
     """
     Run LLM calls in set interval with cron.
     """
-    logger = Logger.setup_logger("rag")
+    logger = Logger().setup_logger("rag")
 
     logger.info(f' [*] Healthcheck running on port 8000.')
 
