@@ -28,7 +28,8 @@ Unless the user specifies in the question a specific number of examples to obtai
 Wrap each column name in double quotes (") to denote them as delimited identifiers.
 Pay attention to use only the column names you can see in the tables below. Be careful to not query for columns or rows that do not exist. Also, pay attention to which column is in which table.
 Pay attention to use NOW() function to get the current date and time, as your query must contain rows that are 15 minutes behind current time and date.
-The question will contain the sentence "XX minutes"", which means that you have to calculate the time difference between NOW() and  
+The question will contain the sentence "XX minutes", which means that you have to calculate the time difference between NOW() and the last XX minutes.
+DO NOT use any SQL functions that are not supported in Clickhouse such as STDDEV() etc.
 
 That being said, answer the question in the following structure if none of the above conditions are violated.
 
@@ -45,7 +46,7 @@ If there are any errors, ALWAYS output what the error is and the executed query.
 
 Question: {input}'''
 
-template="""You are a PostgreSQL expert. Given an input question, first create a syntactically correct PostgreSQL query to run, then look at the results of the query and return the answer to the input question.
+template="""You are a Clickhouse SQL expert. Given an input question, first create a syntactically correct Clickhouse SQL query to run, then look at the results of the query and return the answer to the input question.
 You have access to a database containing a variety of historical and recent data entries from an observability monitoring system.
 For this task, focus only on the entries from the requested time interval.
 Your analysis should not consider data older than this time window, even if it is accessible. 
@@ -132,7 +133,7 @@ llm_response = LLMResponse(
     llm_query=q
 )
 
-question = f'''What is the overall analysis of the data from the last {get_env_value("DATA_INTERVAL")} days? 
+question = f'''What is the overall analysis of the data from the last {get_env_value("DATA_INTERVAL")} minutes? 
 Are there any key insights or observabilities?
 Are there any outlier data based on the prediction column?
 Are there any possible mitigations to perform if there are any issues?'''
