@@ -4,32 +4,32 @@ version: '3.8'
 services:
   rag:
     container_name: rag 
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        - LOG_LEVEL=${LOG_LEVEL}
-        - DATA_INTERVAL=${DATA_INTERVAL}
-        - CRON_SLICES=${CRON_SLICES}
-        - TOGETHER_ENDPOINT=${TOGETHER_ENDPOINT}
-        - TOGETHER_API_KEY=${TOGETHER_API_KEY}
-        - TOGETHER_LLM_MODEL=${TOGETHER_LLM_MODEL}
-        - CLICKHOUSE_HOST=${CLICKHOUSE_HOST}
-        - CLICKHOUSE_PORT=${CLICKHOUSE_PORT}
-        - CLICKHOUSE_USERNAME=${CLICKHOUSE_USERNAME}
-        # - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
-        - CLICKHOUSE_DATABASE=${CLICKHOUSE_DATABASE}
-        - CLICKHOUSE_TABLE=${CLICKHOUSE_TABLE}
-        - VECTOR_AGGREGATOR_SINK_ADDR=${VECTOR_AGGREGATOR_SINK_ADDR}
-    env_file:
-      - ./.env
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    #   args:
+    #     - LOG_LEVEL=${LOG_LEVEL}
+    #     - DATA_INTERVAL=${DATA_INTERVAL}
+    #     - CRON_SLICES=${CRON_SLICES}
+    #     - TOGETHER_ENDPOINT=${TOGETHER_ENDPOINT}
+    #     - TOGETHER_API_KEY=${TOGETHER_API_KEY}
+    #     - TOGETHER_LLM_MODEL=${TOGETHER_LLM_MODEL}
+    #     - CLICKHOUSE_HOST=${CLICKHOUSE_HOST}
+    #     - CLICKHOUSE_PORT=${CLICKHOUSE_PORT}
+    #     - CLICKHOUSE_USERNAME=${CLICKHOUSE_USERNAME}
+    #     # - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
+    #     - CLICKHOUSE_DATABASE=${CLICKHOUSE_DATABASE}
+    #     - CLICKHOUSE_TABLE=${CLICKHOUSE_TABLE}
+    #     - VECTOR_AGGREGATOR_SINK_ADDR=${VECTOR_AGGREGATOR_SINK_ADDR}
+    # env_file:
+    #   - ./.env
+    # command: >
+    #   sh -c "mkdir -p /app/logs && 
+    #           touch /app/logs/rag.log && 
+    #           chmod 644 /app/logs/rag.log
+    #           uvicorn main:app --host 0.0.0.0 --port 8000"
     volumes:
       - log_data:/app/logs/
-    command: >
-      sh -c "mkdir -p /app/logs && 
-              touch /app/logs/rag.log && 
-              chmod 644 /app/logs/rag.log
-              uvicorn main:app --host 0.0.0.0 --port 8000"
     ports:
       - "8000:8000"
     networks:
