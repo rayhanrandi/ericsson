@@ -11,6 +11,7 @@ ARG VECTOR_AGGREGATOR_SINK_ADDR
 
 # Required environment variables as build arguments here
 ARG LOG_LEVEL=${LOG_LEVEL:-DEBUG}
+ARG PORT=${PORT}
 ARG KAFKA_BROKER=${KAFKA_BROKER}
 ARG KAFKA_TOPIC=${KAFKA_TOPIC}
 ARG VECTOR_AGGREGATOR_SINK_ADDR=${VECTOR_AGGREGATOR_SINK_ADDR}
@@ -34,4 +35,4 @@ RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /
 USER appuser
 
 # During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
-CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port 8000"]
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port", ${PORT}]
