@@ -30,7 +30,7 @@ services:
       sh -c "mkdir -p /app/logs && 
              touch /app/logs/rag.log && 
              chmod 644 /app/logs/rag.log
-             uvicorn main:app --host 0.0.0.0 --port 8000"
+             uvicorn cron:app --host 0.0.0.0 --port 8000"
     ports:
       - "8001:8000"
     networks:

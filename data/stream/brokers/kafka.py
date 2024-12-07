@@ -70,7 +70,7 @@ class Producer:
             interval_seconds = 30  # Interval between each entry in seconds
             start_time = datetime.now() - timedelta(hours=24)
 
-            anomaly_rate = 0.05  # 5% anomaly rate
+            anomaly_rate = 5  # 5% anomaly rate
 
             def temperature(hour):
                 return 15 + 10 * math.sin((hour / 24) * 2 * math.pi) + random.uniform(-3, 3)
@@ -99,7 +99,7 @@ class Producer:
                         "accel": accel
                     }
 
-                    if random.random() < anomaly_rate:
+                    if random.randint(0, 100) < anomaly_rate:
                         anomaly_type = random.choice(["temp_spike", "high_gyro", "high_accel", "combo"])
                         if anomaly_type == "temp_spike":
                             sensor_data["temp"] = str(round(random.uniform(100, 150), 2))  # Extreme temperature
@@ -117,8 +117,7 @@ class Producer:
                     self.logger.info(f" [*] sent: {sensor_data}")
 
                     # simulate delays
-                    # TODO: minimize delays
-                    time.sleep(random.uniform(1, 30))
+                    time.sleep(random.uniform(0, 1))
         except Exception as e:
             self.logger.error(f" [X] {e}")
             self.logger.info(" [*] Stopping data generation.")

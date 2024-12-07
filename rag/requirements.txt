@@ -1,4 +1,3 @@
-clickhouse-connect
 clickhouse-sqlalchemy
 fastapi[standard]
 langchain
@@ -8,4 +7,3 @@ langchain-openai
 psycopg2-binary
 python-crontab
 python-dotenv
-sentence_transformers
