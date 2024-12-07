@@ -22,6 +22,7 @@ A placeholder service in place of actual edge devices from on premises machineer
 ### Quickstart
 
 1. In current directory, run:
+   
     ```
     uvicorn main:app --reload 
     ```
