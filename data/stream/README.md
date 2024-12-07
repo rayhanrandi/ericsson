@@ -1,6 +1,6 @@
 # Data Stream
 
-A placeholder service in place of actual edge devices from on premises machineery. This service generates data in real-time, either from a `.csv` dataset or continuously generated data points, into a Kafka topic message broker. 
+A placeholder service in place of actual edge devices from on premises machinery. This service generates data in real-time, either from a `.csv` dataset or continuously generated data points, into a Kafka topic message broker. 
 
 
 
