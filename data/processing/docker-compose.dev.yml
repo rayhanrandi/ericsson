@@ -22,6 +22,8 @@ services:
       - ./.env
     volumes:
       - log_data:/app/logs/
+      # persistent spark checkpoint to store offsets
+      # - /home/$(whoami)/volumes/proc-checkpoint:/app/processor/checkpoint/
     # override dockerfile startup cmd 
     command: >
       sh -c "mkdir -p /app/logs && 
