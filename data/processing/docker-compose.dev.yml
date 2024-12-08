@@ -7,6 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
+        - PORT=${PORT}
         - LOG_LEVEL=${LOG_LEVEL}
         - KAFKA_BROKER=${KAFKA_BROKER}
         - KAFKA_TOPIC=${KAFKA_TOPIC}
@@ -21,13 +22,14 @@ services:
       - ./.env
     volumes:
       - log_data:/app/logs/
+    # override dockerfile startup cmd 
     command: >
       sh -c "mkdir -p /app/logs && 
              touch /app/logs/consumer.log && 
              chmod 644 /app/logs/consumer.log
-             uvicorn main:app --host 0.0.0.0 --port 8000"
+             uvicorn main:app --host 0.0.0.0 --port $PORT"
     ports:
-      - "8001:8000"
+      - "$PORT:$PORT"
     networks:
       - grafana_grafana-net
     healthcheck:
