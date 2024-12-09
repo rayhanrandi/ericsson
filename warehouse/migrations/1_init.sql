@@ -21,9 +21,9 @@ USE warehouse;
 -- processed data
 CREATE TABLE IF NOT EXISTS analysis (
     timestamp DateTime,
-    sensor Int64,
-    temp Float64,
-    hum Float64,
+    machine_id Int64,
+    temperature Float64,
+    humidity Float64,
     gyro_x Float64,
     gyro_y Float64,
     gyro_z Float64,

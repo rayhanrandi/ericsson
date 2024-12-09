@@ -46,6 +46,7 @@ class ClickhouseClient:
 
             # Prepare the insert query
             insert_query = table_ref.insert()
+            self.logger.info(f"Inserting {values_list} rows into {self.table}.")
 
             # Execute batch insert
             self.session.execute(insert_query, values_list)
