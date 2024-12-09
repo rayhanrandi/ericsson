@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  consumer:
+    container_name: consumer
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - PORT=${PORT}
+        - LOG_LEVEL=${LOG_LEVEL}
+        - KAFKA_BROKER=${KAFKA_BROKER}
+        - KAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS}
+        - KAFKA_TOPIC=${KAFKA_TOPIC}
+        - VECTOR_AGGREGATOR_SINK_ADDR=${VECTOR_AGGREGATOR_SINK_ADDR}
+        - CLICKHOUSE_HOST=${CLICKHOUSE_HOST}
+        - CLICKHOUSE_PORT=${CLICKHOUSE_PORT}
+        - CLICKHOUSE_USERNAME=${CLICKHOUSE_USERNAME}
+        - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
+        - CLICKHOUSE_DATABASE=${CLICKHOUSE_DATABASE}
+        - CLICKHOUSE_SENSOR_TABLE=${CLICKHOUSE_SENSOR_TABLE}
+    env_file:
+      - ./.env
+    volumes:
+      - log_data:/app/logs/
+      # persistent spark checkpoint to store offsets
+      # - /home/$(whoami)/volumes/proc-checkpoint:/app/processor/checkpoint/
+    # override dockerfile startup cmd 
+    command: >
+      sh -c "mkdir -p /app/logs && 
+             touch /app/logs/consumer.log && 
+             chmod 644 /app/logs/consumer.log
+             uvicorn main:app --host 0.0.0.0 --port $PORT"
+    ports:
+      - "$PORT:$PORT"
+    networks:
+      - grafana_grafana-net
+    healthcheck:
+      test: curl -f http://localhost:8000/ping || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    user: "0:0"
+
+  vector-proc:
+    depends_on:
+      - consumer
+    image: timberio/vector:0.42.0-alpine
+    container_name: vector-proc
+    volumes:
+      - ./vector.yaml:/etc/vector/vector.yaml:ro
+      # mount log file paths as necessary with :ro read only permissions
+      - log_data:/var/log/data/processing:ro
+    env_file:
+      - .env
+    ports:  
+      - "8688:8688"
+    networks:
+      - grafana_grafana-net
+
+networks:
+  grafana_grafana-net:
+    external: true
+
+volumes:
+  log_data: 

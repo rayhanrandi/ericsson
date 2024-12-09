@@ -31,6 +31,7 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_CREATE_TOPICS: "sensor_data:1:1"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     ports:
       - "9093:9093"
     networks:
@@ -51,6 +52,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
+        - PORT=${PORT}
         - LOG_LEVEL=${LOG_LEVEL}
         - KAFKA_BROKER=${KAFKA_BROKER}
         - KAFKA_TOPIC=${KAFKA_TOPIC}
@@ -59,13 +61,14 @@ services:
       - ./.env
     volumes:
       - log_data:/app/logs/
+    # override dockerfile CMD
     command: >
       sh -c "mkdir -p /app/logs && 
              touch /app/logs/producer.log && 
              chmod 644 /app/logs/producer.log
-             uvicorn main:app --host 0.0.0.0 --port 8000"
+             uvicorn main:app --host 0.0.0.0 --port $PORT"
     ports:
-      - "8000:8000"
+      - "$PORT:$PORT"
     networks:
       - grafana_grafana-net
     healthcheck:

@@ -1,4 +1,3 @@
-clickhouse-connect
 clickhouse-sqlalchemy
 fastapi[standard]
 langchain

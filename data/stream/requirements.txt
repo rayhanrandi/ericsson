@@ -1,3 +1,5 @@
 fastapi[standard]
 kafka-python
+numpy
+pandas
 python-dotenv
