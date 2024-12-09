@@ -74,7 +74,7 @@ From the {table_info}, here are the description of what each column represent:
 8. accel_x represents the linear acceleration along the x-axis, measured by an accelerometer. It uses Meters per second squared (m/s²) units
 9. accel_y represents the linear acceleration along the y-axis, measured by an accelerometer. It uses meters per second squared (m/s²) units
 10. accel_a represents the linear acceleration along the a-axis, measured by an accelerometer. It uses meters per second squared (m/s²) units
-11. prediction represents the predicted machine status. It uses categorical units: 0 for normal and 1 for anomaly (there's nothing in between) -> Anomaly means there could be problems with the machine
+11. prediction represents the machine's status using categorical values. 0 for normal operation and 1 for anomaly, indicating potential machine issues. There are no intermediate states between 0 and 1, making this a binary classification where averaging is not applicable
 12. hour represents the hour of the day when the data was recorded. It uses 24-Hour format (0-23)
 13. day_of_week represents the day of the week when the data was recorded, where 0 = Sunday, 1 = Monday, 2 = Tuesday, 3 = Wednesday, 4 = Thursday, 5 = Friday, 6 = Saturday
 14. month represents the month of the year when the data was recorded, represented numerically (1 = January, 2 = February, 3 = March, 4 = April, 5 = May, 6 = June, 7 = July, 8 = August, 9 = September, 10 = October, 11 = November, 12 = December)
