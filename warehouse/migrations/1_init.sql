@@ -31,6 +31,15 @@ CREATE TABLE IF NOT EXISTS analysis (
     accel_y Float64,
     accel_z Float64,
     prediction Int64,
+    hour Int32,
+    day_of_week Int32,
+    month Int32,
+    shift String,
+    machine_type String,
+    machine_age Int32,
+    operator_id String,
+    material_type String,
+    days_since_last_maintenance Int32,
     PRIMARY KEY (timestamp)
 ) ENGINE = MergeTree()
 ORDER BY timestamp;

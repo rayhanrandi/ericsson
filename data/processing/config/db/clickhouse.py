@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, List
 
 from clickhouse_sqlalchemy import (
     engines,
@@ -36,4 +36,23 @@ class ClickhouseClient:
         Executes INSERT query with given values in client to defined table.
         """
         return self.session.execute(Table(self.table, self.metadata, autoload_with=self.engine).insert().values(values))
+    
+    def execute_insert_batch(self, values_list: List[dict[str, Any]]) -> None:
+        """
+        Executes a batch INSERT query with a list of values into the defined table.
+        """
+        try:
+            table_ref = Table(self.table, self.metadata, autoload_with=self.engine)
+
+            # Prepare the insert query
+            insert_query = table_ref.insert()
+
+            # Execute batch insert
+            self.session.execute(insert_query, values_list)
+            self.session.commit()
+            self.logger.info(f"Successfully inserted {len(values_list)} rows into {self.table}.")
+        except Exception as e:
+            self.logger.error(f"Error executing batch insert: {e}")
+            self.session.rollback()
+            raise
     

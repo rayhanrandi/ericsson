@@ -62,7 +62,8 @@ model.load_model()
 processor = SparkProcessor(
     kafka_bootstrap_servers=get_env_value("KAFKA_BOOTSTRAP_SERVERS"),
     kafka_topic=get_env_value("KAFKA_TOPIC"),
-    model=model
+    model=model,
+    db=ch_client
 )
 
 t_processor = threading.Thread(

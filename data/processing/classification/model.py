@@ -58,7 +58,7 @@ class Model:
         predictions = self.model.predict(data_scaled)
         return pd.Series(predictions, name="prediction")
 
-    def process_message(self, message: dict) -> dict:
+    def process_message(self, message: dict) -> int:
         """
         Process a single message from Kafka: preprocess and predict.
 
@@ -69,22 +69,7 @@ class Model:
             preprocessed_data = self.preprocess_data(message)
             prediction = self.predict(preprocessed_data).iloc[0]
 
-            result = {
-                'timestamp': message['timestamp'],
-                'machine_id': int(message['machine_id']),
-                'temperature': float(message['temperature']),
-                'humidity': float(message['humidity']),
-                'vibration': float(message['vibration']),
-                'gyro_x': float(message['gyro_x']),
-                'gyro_y': float(message['gyro_y']),
-                'gyro_z': float(message['gyro_z']),
-                'accel_x': float(message['accel_x']),
-                'accel_y': float(message['accel_y']),
-                'accel_z': float(message['accel_z']),
-                'cycle_time': float(message['cycle_time']),
-                'prediction': int(prediction)
-            }
-            return result
+            return int(prediction)
 
         except Exception as e:
             print(f"Error processing message: {e}")
