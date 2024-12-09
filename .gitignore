@@ -1,6 +1,9 @@
 # Clickhouse volumes
 volumes/
 
+# Spark checkpoints
+checkpoint/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
