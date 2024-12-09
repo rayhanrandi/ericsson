@@ -1,6 +1,6 @@
 FROM python:3.11-slim
 
-EXPOSE 8000
+EXPOSE 8501
 
 # Argument variables
 ARG LOG_LEVEL
@@ -53,18 +53,18 @@ RUN python -m pip install -r requirements.txt
 WORKDIR /app
 COPY . /app
 
+# Install cron and busybox
+RUN apt-get update \
+  && apt-get install -y \
+    cron
+
 # Creates a non-root user with an explicit UID and adds permission to access the /app folder
 # For more info, please refer to https://aka.ms/vscode-docker-python-configure-containers
 RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
 
-# Install cron and busybox
-RUN sudo apt-get update \
-  && sudo apt-get install -y \
-    cron
-
 # https://stackoverflow.com/a/37458519
 RUN chmod 0744 ./main.py
 
 # During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
-CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port 8000"]
+CMD ["sh", "-c", "streamlit run app.py"]
