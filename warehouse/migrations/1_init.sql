@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS analysis (
     accel_y Float64,
     accel_z Float64,
     prediction Int64,
+    cycle_time Float64,
     hour Int32,
     day_of_week Int32,
     month Int32,
