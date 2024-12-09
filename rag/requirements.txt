@@ -7,3 +7,5 @@ langchain-openai
 psycopg2-binary
 python-crontab
 python-dotenv
+sentence_transformers
+streamlit

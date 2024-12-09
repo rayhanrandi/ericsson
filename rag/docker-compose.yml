@@ -30,22 +30,27 @@ services:
     #           uvicorn main:app --host 0.0.0.0 --port 8000"
     volumes:
       - log_data:/app/logs/
+    command: >
+      sh -c "mkdir -p /app/logs && 
+              touch /app/logs/rag.log && 
+              chmod 644 /app/logs/rag.log
+              streamlit run app.py"
     ports:
-      - "8000:8000"
+      - "8501:8501"
     networks:
-      - rag-net
-    healthcheck:
-      test: curl -f http://localhost:8000/ping || exit 1
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      - grafana_grafana-net
+    # healthcheck:
+    #   test: curl -f http://localhost:8000/ping || exit 1
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
     user: "0:0"
 
   vector-rag:
     depends_on:
       - rag
     image: timberio/vector:0.42.0-alpine
-    container_name: vector
+    container_name: rag-vector
     volumes:
       - ./vector.yaml:/etc/vector/vector.yaml:ro
       # mount log file paths as necessary with :ro read only permissions
@@ -55,11 +60,12 @@ services:
     ports:  
       - "8686:8686"
     networks:
-      - rag-net 
+      - grafana_grafana-net
  
 
 networks:
-  rag-net:
+  grafana_grafana-net:
+    external: true
 
 volumes:
   log_data: 

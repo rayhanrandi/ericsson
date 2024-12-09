@@ -1,6 +1,6 @@
 FROM python:3.11-slim
 
-EXPOSE 8000
+EXPOSE 8501
 
 # Argument variables
 ARG LOG_LEVEL
@@ -67,4 +67,4 @@ USER appuser
 RUN chmod 0744 ./main.py
 
 # During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
-CMD ["sh", "-c", "uvicorn cron:app --host 0.0.0.0 --port 8000"]
+CMD ["sh", "-c", "streamlit run app.py"]
