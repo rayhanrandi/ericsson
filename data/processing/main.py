@@ -45,11 +45,11 @@ ch_client = ClickhouseClient(
     table=get_env_value("CLICKHOUSE_SENSOR_TABLE")
 )
 
-# model = Model(
-#     model_path="classification/fault_classifier_model.pkl",
-#     scaler_path="classification/scaler.save"
-# )
-# model.load_model()
+model = Model(
+    model_path="classification/fault_classifier_model.pkl",
+    scaler_path="classification/scaler.save"
+)
+model.load_model()
 
 # consumer = Consumer(
 #     kafka_broker=get_env_value('KAFKA_BROKER'), 
@@ -62,6 +62,7 @@ ch_client = ClickhouseClient(
 processor = SparkProcessor(
     kafka_bootstrap_servers=get_env_value("KAFKA_BOOTSTRAP_SERVERS"),
     kafka_topic=get_env_value("KAFKA_TOPIC"),
+    model=model
 )
 
 t_processor = threading.Thread(
