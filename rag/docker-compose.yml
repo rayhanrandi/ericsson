@@ -50,7 +50,7 @@ services:
     depends_on:
       - rag
     image: timberio/vector:0.42.0-alpine
-    container_name: vector
+    container_name: rag-vector
     volumes:
       - ./vector.yaml:/etc/vector/vector.yaml:ro
       # mount log file paths as necessary with :ro read only permissions
