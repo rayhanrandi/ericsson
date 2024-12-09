@@ -36,6 +36,11 @@ ENV PYTHONUNBUFFERED=1
 COPY requirements.txt .
 RUN python -m pip install -r requirements.txt
 
+# Install cron and busybox
+RUN apt update  \
+  && apt install -y \
+    default-jdk
+
 WORKDIR /app
 COPY . /app
 

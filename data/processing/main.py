@@ -45,31 +45,30 @@ ch_client = ClickhouseClient(
     table=get_env_value("CLICKHOUSE_SENSOR_TABLE")
 )
 
-model = Model(
-    model_path="classification/fault_classifier_model.pkl",
-    scaler_path="classification/scaler.save"
-)
-model.load_model()
+# model = Model(
+#     model_path="classification/fault_classifier_model.pkl",
+#     scaler_path="classification/scaler.save"
+# )
+# model.load_model()
 
-consumer = Consumer(
-    kafka_broker=get_env_value('KAFKA_BROKER'), 
-    kafka_topic=get_env_value('KAFKA_TOPIC'),
-    kafka_consumer_group=get_env_value('KAFKA_CONSUMER_GROUP'),
-    model=model,
-    db=ch_client
-)
+# consumer = Consumer(
+#     kafka_broker=get_env_value('KAFKA_BROKER'), 
+#     kafka_topic=get_env_value('KAFKA_TOPIC'),
+#     kafka_consumer_group=get_env_value('KAFKA_CONSUMER_GROUP'),
+#     model=model,
+#     db=ch_client
+# )
 
 processor = SparkProcessor(
-    kafka_bootstrap_servers=get_env_value("KAFKA_BROKER"),
+    kafka_bootstrap_servers=get_env_value("KAFKA_BOOTSTRAP_SERVERS"),
     kafka_topic=get_env_value("KAFKA_TOPIC"),
 )
 
-t_consumer = threading.Thread(
+t_processor = threading.Thread(
     target=process,
     args=(processor,),
     daemon=True
-)
-t_consumer.start()
+).start()
 
 app = FastAPI()
 
@@ -78,7 +77,7 @@ async def healthcheck():
     """
     Service is healthy if processor thread is running.
     """
-    if t_consumer.is_alive():
+    if t_processor.is_alive():
         return JSONResponse(
             status_code=200,
             content={ "status": "healthy" }
@@ -92,5 +91,5 @@ async def healthcheck():
         })
 
 
-consumer.logger.info(f' [*] Healthcheck running on port 8000.')
+processor.logger.info(f' [*] Healthcheck running on port 8000.')
 

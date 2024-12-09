@@ -21,6 +21,7 @@ class SparkProcessor:
         self.checkpoint_path = checkpoint_path
         self._spark = SparkSession.builder \
             .appName("SparkDataProcessor") \
+            .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.3") \
             .getOrCreate()
         self.logger = Logger().setup_logger('consumer')
 
@@ -37,7 +38,7 @@ class SparkProcessor:
             .option("maxOffsetsPerTrigger", self.batch_size) \
             .load()
         # extract key & value as strings (default binary)
-        self.df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
+        self._df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
         print(self._df.head)
         # define sink
         self._query = self._df.writeStream \
