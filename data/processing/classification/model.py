@@ -42,7 +42,9 @@ class Model:
             'accel_x': float(data['accel_x']),
             'accel_y': float(data['accel_y']),
             'accel_z': float(data['accel_z']),
-            'cycle_time': float(data['cycle_time'])
+            'cycle_time': float(data['cycle_time']),
+            'machine_age': float(data['machine_age']),
+            'days_since_last_maintenance': float(data['days_since_last_maintenance'])
         }
         df = pd.DataFrame([features])
         return df
