@@ -2,6 +2,7 @@ import json
 import math
 import random
 import time
+import csv
 
 from datetime import (
     datetime, 
@@ -63,61 +64,29 @@ class Producer:
     
     def produce(self) -> None:
         """
-        Produces messages with a delay.
+        Produces messages from a CSV file, simulating real-time data.
         """
         try:
-            num_entries = 2880  # 24 hours with 30-second intervals
-            interval_seconds = 30  # Interval between each entry in seconds
-            start_time = datetime.now() - timedelta(hours=24)
+            with open('dataset/csv/dataset.csv', mode='r') as file:
+                reader = csv.DictReader(file)
+                rows = list(reader)
 
-            anomaly_rate = 5  # 5% anomaly rate
-
-            def temperature(hour):
-                return 15 + 10 * math.sin((hour / 24) * 2 * math.pi) + random.uniform(-3, 3)
-
-            def humidity(hour):
-                return 55 + 10 * math.cos((hour / 24) * 2 * math.pi) + random.uniform(-5, 5)
-
+            self.logger.info(" [*] Starting real-time Kafka producer.")
             while True:
-                for i in range(num_entries):
-                    # current_time = (start_time + timedelta(seconds=i * interval_seconds)).strftime("%Y-%m-%d %H:%M:%S")
-                    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                    hour = (start_time + timedelta(seconds=i * interval_seconds)).hour
+                for row in rows:
+                    # Update the timestamp to the current time for real-time simulation
+                    row['timestamp'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
 
-                    temp = temperature(hour)
-                    hum = humidity(hour)
-                    
-                    gyro = [round(random.uniform(0, 10), 2) for _ in range(3)]
-                    accel = [round(random.uniform(0, 5), 2) for _ in range(3)]
+                    # Send row to Kafka
+                    self._instance.send(self._kafka_topic, value=row)
+                    self.logger.info(f"[*] Sent: {row}")
 
-                    sensor_data = {
-                        "sensor": str(random.randint(1, 4)),
-                        "time": current_time,
-                        "temp": str(round(temp, 2)),
-                        "hum": str(round(hum, 2)),
-                        "gyro": gyro,
-                        "accel": accel
-                    }
+                    # Simulate real-time delay
+                    time.sleep(1)
 
-                    if random.randint(0, 100) < anomaly_rate:
-                        anomaly_type = random.choice(["temp_spike", "high_gyro", "high_accel", "combo"])
-                        if anomaly_type == "temp_spike":
-                            sensor_data["temp"] = str(round(random.uniform(100, 150), 2))  # Extreme temperature
-                        elif anomaly_type == "high_gyro":
-                            sensor_data["gyro"] = [round(random.uniform(100, 200), 2) for _ in range(3)]  # High gyro
-                        elif anomaly_type == "high_accel":
-                            sensor_data["accel"] = [round(random.uniform(10, 20), 2) for _ in range(3)]  # High accel
-                        elif anomaly_type == "combo":
-                            sensor_data["temp"] = str(round(random.uniform(80, 120), 2))
-                            sensor_data["hum"] = str(round(random.uniform(60, 80), 2))
-                            sensor_data["gyro"] = [round(random.uniform(50, 100), 2) for _ in range(3)]
-
-                    # Send data to Kafka
-                    self._instance.send(self._kafka_topic, value=sensor_data)
-                    self.logger.info(f" [*] sent: {sensor_data}")
-
-                    # simulate delays
-                    time.sleep(random.uniform(0, 1))
+                # Reset reader to simulate continuous data streaming
+                file.seek(0)
+                next(reader)  # Skip header row
         except Exception as e:
             self.logger.error(f" [X] {e}")
             self.logger.info(" [*] Stopping data generation.")
