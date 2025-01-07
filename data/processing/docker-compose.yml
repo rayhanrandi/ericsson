@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  consumer:
+    container_name: consumer
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - LOG_LEVEL=${LOG_LEVEL}
+        - KAFKA_BROKER=${KAFKA_BROKER}
+        - KAFKA_TOPIC=${KAFKA_TOPIC}
+        - VECTOR_AGGREGATOR_SINK_ADDR=${VECTOR_AGGREGATOR_SINK_ADDR}
+        - CLICKHOUSE_HOST=${CLICKHOUSE_HOST}
+        - CLICKHOUSE_PORT=${CLICKHOUSE_PORT}
+        - CLICKHOUSE_USERNAME=${CLICKHOUSE_USERNAME}
+        - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
+        - CLICKHOUSE_DATABASE=${CLICKHOUSE_DATABASE}
+        - CLICKHOUSE_SENSOR_TABLE=${CLICKHOUSE_SENSOR_TABLE}
+    env_file:
+      - ./.env
+    volumes:
+      - log_data:/app/logs/
+    command: >
+      sh -c "mkdir -p /app/logs && 
+             touch /app/logs/consumer.log && 
+             chmod 644 /app/logs/consumer.log
+             uvicorn main:app --host 0.0.0.0 --port 8000"
+    ports:
+      - "8000:8000"
+    networks:
+      - data-net
+    healthcheck:
+      test: curl -f http://localhost:8000/ping || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    user: "0:0"
+
+  vector:
+    depends_on:
+      - consumer
+    image: timberio/vector:0.42.0-alpine
+    container_name: vector
+    volumes:
+      - ./vector.yaml:/etc/vector/vector.yaml:ro
+      # mount log file paths as necessary with :ro read only permissions
+      - log_data:/var/log/data/processing:ro
+    env_file:
+      - .env
+    ports:  
+      - "8686:8686"
+    networks:
+      - data-net
+
+networks:
+  data-net:
+    driver: bridge
+
+volumes:
+  log_data: 

@@ -1,0 +1,42 @@
+name: Vector Aggregator & Grafana
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+  push:
+    branches:
+      - main
+  
+jobs:
+  deployment:
+    name: Service Deployment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install SSH client
+        run: sudo apt-get install openssh-client
+
+      - name: Export SSH key
+        run: echo "${{ secrets.SSH_KEY }}" > ssh-key.pem
+
+      - name: Update SSH key permissions
+        run: chmod 400 ssh-key.pem
+
+      - name: Connect to VM & Deploy services
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ssh-key.pem ${{ secrets.LOG_INSTANCE_USERNAME }}@${{ secrets.LOG_INSTANCE_HOST }} << 'EOF'
+          [ -d "$(pwd)/ericsson" ] && rm -rf ericsson || true &&
+          git clone git@github.com:rayhanrandi/ericsson.git || true &&
+          cd ./ericsson || true && 
+          cd ./grafana || true &&
+          echo CLICKHOUSE_HOST=${{ secrets.WH_CLICKHOUSE_HOST }} > .env || true &&
+          echo CLICKHOUSE_DB=${{ secrets.WH_CLICKHOUSE_DB }} >> .env || true &&
+          echo CLICKHOUSE_TABLE=${{ secrets.WH_CLICKHOUSE_TABLE }} >> .env || true &&
+          cd .. || true &&
+          make grafana-down || true && make grafana-up || true
+          EOF

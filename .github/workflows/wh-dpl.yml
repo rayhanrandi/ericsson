@@ -1,0 +1,39 @@
+name: Data Warehouse (Clickhouse OLAP2)
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+  push:
+    branches:
+      - main
+  
+jobs:
+  deployment:
+    name: Service Deployment 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install SSH client
+        run: sudo apt-get install openssh-client
+
+      - name: Export SSH key
+        run: echo "${{ secrets.SSH_KEY }}" > ssh-key.pem
+
+      - name: Update SSH key permissions
+        run: chmod 400 ssh-key.pem
+
+      - name: Connect to VM & Deploy services
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ssh-key.pem ${{ secrets.WH_INSTANCE_USERNAME }}@${{ secrets.WH_INSTANCE_HOST }} << 'EOF'
+          sudo rm -rf ericsson || true &&
+          git clone git@github.com:rayhanrandi/ericsson.git || true &&
+          cd ./ericsson || true && 
+          make wh-down || true && make wh-up || true
+          EOF
+
+    

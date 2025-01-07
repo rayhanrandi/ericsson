@@ -1,0 +1,11 @@
+clickhouse-sqlalchemy
+fastapi[standard]
+joblib
+kafka-python
+kafka-python-ng
+pandas
+psycopg2-binary
+pyspark
+python-dotenv
+scikit-learn
+setuptools
